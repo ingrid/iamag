@@ -17,6 +17,7 @@ var initialize = function(){
 
   drawBackground(game);
   var player = makePlayer(game);
+  var cop = makeCop(game);
   var road = drawRoad(game);
   var cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000);
@@ -43,7 +44,140 @@ var makeCam = function(g, p){
   });
   g.add(c);
   return c;
-}
+};
+
+var cops = [];
+
+var makeCop =  function(game){
+  var c = jam.Sprite(320, 4050);
+  c.setImage("data/police_car.png", 32, 51);
+  game.add(c);
+  cops.push(c);
+  c.speed = 5;
+
+  /** /
+  var speed = 0;
+  var speedMax = 200;
+  var speedMaxReverse = -3;
+  var speedAcceleration = .5;
+  var speedDeceleration = .90;
+  var groundFriction = .95;
+
+  var steering = 0;
+  var steeringMax = 2;
+  var steeringAcceleration = .10;
+  var steeringFriction = .98;
+
+  var velocityX = 0;
+  var velocityY = 0;
+
+  var up = false;
+  var down = false;
+  var left = false;
+  var right = false;
+  /**/
+
+
+  var dumb = function(elapsed){
+    /**/
+	var vec = {};
+	vec.x = c.x - player.x;
+	vec.y = c.y - player.y;
+	var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+    if(dist != 0){
+      vec.x /= dist;
+      vec.y /= dist;
+    }else{
+      vec.x = 0;
+      vec.y = -1;
+    }
+    c.forward = vec;
+	if((Math.abs(c.x - player.x) > 20 ) || (Math.abs(c.y - player.y) > 20)){
+	  c.angle = -(Math.atan2(vec.x, vec.y) * (180/Math.PI));
+      var velocityX = Math.sin (c.angle * Math.PI / 180) * c.speed;
+      var velocityY = Math.cos (c.angle * Math.PI / 180) * -c.speed;
+      c.x += velocityX;
+      c.y += velocityY;
+      //console.log(c.angle);
+	  //c.velocity.x = -vec.x * c.speed;
+      //c.velocity.y = -vec.y * c.speed;
+    }
+    /**/
+
+    /** /
+    if(up){
+      if (speed < speedMax){
+        speed += speedAcceleration;
+        if (speed > speedMax){
+          speed = speedMax;
+        }
+      }
+    }
+    if(down){
+      if (speed > speedMaxReverse){
+        speed -= speedAcceleration;
+        if (speed < speedMaxReverse){
+          speed = speedMaxReverse;
+        }
+      }
+    }
+    if (left){
+      steering -= steeringAcceleration;
+      if (steering > steeringMax){
+        steering = steeringMax;
+      }
+    }
+    if(right){
+      steering += steeringAcceleration;
+      if (steering < -steeringMax){
+        steering = -steeringMax;
+      }
+    }
+
+    speed *= groundFriction;
+
+    // prevent drift
+    if(speed > 0 && speed < 0.05){
+      speed = 0;
+    }
+
+    velocityX = Math.sin (c.angle * Math.PI / 180) * speed;
+    velocityY = Math.cos (c.angle * Math.PI / 180) * -speed;
+
+    c.x += velocityX;
+    c.y += velocityY;
+
+    // prevent steering drift (right)
+    if(steering > 0){
+      // check if steering value is really low, set to 0
+      if(steering < 0.05)
+      {
+        steering = 0;
+      }
+    }
+    // prevent steering drift (left)
+    else if(steering < 0){
+      // check if steering value is really low, set to 0
+      if(steering > -0.05){
+        steering = 0;
+      }
+    }
+
+    // apply steering friction
+    steering = steering * steeringFriction;
+
+    // make car go straight after driver stops turning
+    steering -= (steering * 0.1);
+
+    // rotate
+    c.angle += steering * speed;
+    /**/
+  };
+
+  c.update = jam.extend(c.update, function(elapsed){
+    dumb();
+  });
+};
 
 var drawRoad = function(game){
   var tmp_canvas = document.createElement("canvas");
@@ -128,7 +262,8 @@ var makePlayer = function(game){
 
   var d_speed = 100;
   var max_speed = 400;
-  var player = jam.AnimatedSprite(320, 4000);
+  // G.
+  player = jam.AnimatedSprite(320, 4000);
     player.setImage("data/car.png", 32, 51);
 
 
@@ -288,7 +423,7 @@ var makePlayer = function(game){
     /**/
   });
   return player;
-}
+};
 
 var makeBus = function(x, y){
   var d_speed = 100;
@@ -311,7 +446,7 @@ var makePotHole = function(x, y) {
     var pothole = jam.AnimatedSprite(x || 0, y || 0);
     pothole.setImage("data/pothole.png", 32, 26);
     return pothole;
-}
+};
 
 
 window.onload = function(){
