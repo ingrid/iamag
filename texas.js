@@ -15,8 +15,10 @@ var initialize = function(){
   erase = false;
   var ctx = bg.image.getContext("2d");
 
+  drawBackground(game);
   var player = makePlayer(game);
   var road = drawRoad(game);
+  
   bg.color = "rgba(0,128,255,0.75)";
 
   game.add(player);
@@ -61,6 +63,23 @@ var drawRoad = function(game, path){
   road.height = tmp_canvas.height;
   game.add(road);
 
+};
+
+var drawBackground = function(game){
+  var tmp_canvas = document.createElement("canvas");
+  tmp_canvas.width = 640;
+  tmp_canvas.height = 5000;
+  var tmp_context = tmp_canvas.getContext("2d");
+  tmp_context.rect(0,0,tmp_canvas.width,tmp_canvas.height);
+  tmp_context.fillStyle="tan";
+  tmp_context.fill();
+
+  var bg = new jam.Sprite(0, 0);
+  bg._layer = -100;
+  bg.image = tmp_canvas;
+  bg.width = tmp_canvas.width;
+  bg.height = tmp_canvas.height;
+  game.add(bg);
 };
 
 // Generate coordinates for drawing the road.
