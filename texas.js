@@ -288,6 +288,23 @@ var makePlayer = function(game){
   return player;
 }
 
+var makeBus = function(game){
+  var d_speed = 100;
+  var max_speed = 400;
+  var bus = jam.AnimatedSprite(320, 4000);
+  bus.setImage("data/bus.png", 32, 64);
+
+  bus.anim_idle = jam.Animation.Strip([0], 32, 64, 0);
+  //bus.anim_run = jam.Animation.Strip([1,2,3,4,5,6], 32, 51, 9);
+  bus.anim_run = bus.anim_idle;
+  bus.playAnimation(bus.anim_idle);
+
+  bus.setCollisionOffsets(6, 0, 20, 31);
+  bus.setLayer(1);
+
+  return bus;
+};
+
 var makePotHole = function(x, y) {
     var pothole = jam.AnimatedSprite(x || 0, y || 0);
     pothole.setImage("data/pothole.png", 32, 26);
