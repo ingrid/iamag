@@ -34,7 +34,7 @@ var drawRoad = function(game, path){
   var tmp_context = tmp_canvas.getContext("2d");
   tmp_context.beginPath();
   tmp_context.moveTo(300, 0);
-  tmp_context.lineWidth = 70;
+  tmp_context.lineWidth = 90;
   tmp_context.strokeStyle = 'grey';
   tmp_context.lineCap = 'Round';
   var delta = 0;
@@ -49,7 +49,7 @@ var drawRoad = function(game, path){
   tmp_context.drawCurve(points);
   tmp_context.stroke();
   tmp_context.drawCurve(points);
-  tmp_context.lineWidth = 10;
+  tmp_context.lineWidth = 5;
   tmp_context.strokeStyle = 'yellow';
   tmp_context.stroke();
   /**/
@@ -70,11 +70,14 @@ var makePlayer = function(game){
   var d_speed = 100;
   var max_speed = 400;
   var player = jam.AnimatedSprite(320, 1000);
-  player.setImage("data/player.png", 32, 32);
+    player.setImage("data/car.png", 32, 51);
+  
 
-  player.anim_idle = jam.Animation.Strip([0], 32, 32, 0);
-  player.anim_run = jam.Animation.Strip([1,2,3,4,5,6], 32, 32, 9);
-  player.anim_jump = jam.Animation.Strip([32], 32, 32, 0);
+
+  player.anim_idle = jam.Animation.Strip([0], 32, 51, 0);
+  //player.anim_run = jam.Animation.Strip([1,2,3,4,5,6], 32, 51, 9);
+  player.anim_run = player.anim_idle;
+  player.anim_jump = jam.Animation.Strip([32], 32, 51, 0);
   player.playAnimation(player.anim_idle);
 
   player.setCollisionOffsets(6, 0, 20, 31);
@@ -125,5 +128,6 @@ var makePlayer = function(game){
 
 window.onload = function(){
   jam.preload("data/player.png");
+  jam.preload("data/car.png");
   jam.showPreloader(document.body, initialize);
 };
