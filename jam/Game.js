@@ -17,7 +17,7 @@ window.onload = function(){
 jam.Game = function(width, height, parentElement){
 	var self = {};
 
-	self._canvas = document.createElement("canvas"); 
+	self._canvas = document.createElement("canvas");
 	self._canvas.style.position = "relative";
 	self._context = self._canvas.getContext("2d");
 	self._children = [];
@@ -26,7 +26,7 @@ jam.Game = function(width, height, parentElement){
 
 	// List of objects to be removed
 	self._remove = [];
-	
+
 	// Always keep the canvas in the middle of the parent element
 	onresize = function(){
 		self._canvas.style.left = (parentElement.clientWidth / 2 - width / 2) +"px";
@@ -45,8 +45,9 @@ jam.Game = function(width, height, parentElement){
 		scroll:jam.Vector(0,0),
 		size:jam.Vector(self.width, self.height),
 		follow:null,
+        bounce:{x:0, y:0}
 	};
-	self.bgColor = "rgb(255,255,255)";	
+	self.bgColor = "rgb(255,255,255)";
 
 	// If they didn't supply this argument, assume the doc body
 	// as the parent element for the canvas
@@ -73,12 +74,24 @@ jam.Game = function(width, height, parentElement){
 
 		self.elapsed = 1.0/self.fps;
 		self.time += self.elapsed;
-		
+
 		// Simplest possible follow code
 		if(self.camera.follow !== null)
-		{
-			self.camera.scroll.x = self.camera.follow.x - self.width / 2;
-			self.camera.scroll.y = self.camera.follow.y - self.height / 2;
+	    {
+          if(Math.abs(self.camera.scroll.x - (self.camera.follow.x - self.width / 2)) > self.camera.bounce.x){
+            if ((self.camera.scroll.x - self.camera.follow.x) + self.width / 2 > 0){
+			  self.camera.scroll.x = (self.camera.follow.x + self.camera.bounce.x) - self.width / 2;
+            } else if ((self.camera.scroll.x - self.camera.follow.x) + self.width / 2 < 0){
+              self.camera.scroll.x = (self.camera.follow.x - self.camera.bounce.x) - self.width / 2;
+            }
+          }
+          if(Math.abs(self.camera.scroll.y - (self.camera.follow.y - self.height / 2)) > self.camera.bounce.y){
+            if ((self.camera.scroll.y - self.camera.follow.y) + self.height / 2 > 0){
+			  self.camera.scroll.y = (self.camera.follow.y + self.camera.bounce.y) - self.height / 2;
+            } else if ((self.camera.scroll.y - self.camera.follow.y) + self.height / 2 < 0){
+              self.camera.scroll.y = (self.camera.follow.y - self.camera.bounce.y) - self.height / 2;
+            }
+          }
 		}
 
 		// Call update on each child and pass it the elapsed time
@@ -116,11 +129,10 @@ jam.Game = function(width, height, parentElement){
 	self.run = function(){
 		self._tick();
 	};
-	
+
 	self.sortSprites = function(){
 		self._children.sort(function(a,b){ return b._layer - a._layer; });
 	}
 
 	return self;
 };
-

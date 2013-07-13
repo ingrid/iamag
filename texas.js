@@ -22,6 +22,8 @@ var initialize = function(){
   game.add(player);
   game.add(bg);
   game.camera.follow = player;
+  game.camera.bounce.x = 20;
+  game.camera.bounce.y = 20;
   game.run();
 }
 
