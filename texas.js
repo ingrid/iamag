@@ -31,7 +31,6 @@ var initialize = function(){
 
 var makeCam = function(g, p){
   var c = new jam.Sprite(p.x, p.y);
-  console.log(c.x, c.y);
   c.update = jam.extend(c.update, function(elapsed){
     c.x = p.x;
     c.y = p.y;
@@ -80,6 +79,29 @@ var drawRoad = function(game){
 
 
 var makePlayer = function(game){
+
+  /**/
+  var speed = 0;
+  var speedMax = 200;
+  var speedMaxReverse = -3;
+  var speedAcceleration = .5;
+  var speedDeceleration = .90;
+  var groundFriction = .95;
+
+  var steering = 0;
+  var steeringMax = 2;
+  var steeringAcceleration = .10;
+  var steeringFriction = .98;
+
+  var velocityX = 0;
+  var velocityY = 0;
+
+  var up = false;
+  var down = false;
+  var left = false;
+  var right = false;
+  /**/
+
   var d_speed = 100;
   var max_speed = 600;
   var player = jam.AnimatedSprite(320, 4000);
@@ -97,13 +119,103 @@ var makePlayer = function(game){
   player.setLayer(1);
 
   player.update = jam.extend(player.update, function(elapsed){
+    /**/
+    if(up){
+      if (speed < speedMax){
+        speed += speedAcceleration;
+        if (speed > speedMax){
+          speed = speedMax;
+        }
+      }
+    }
+    if(down){
+      if (speed > speedMaxReverse){
+        speed -= speedAcceleration;
+        if (speed < speedMaxReverse){
+          speed = speedMaxReverse;
+        }
+      }
+    }
+    if (left){
+      steering -= steeringAcceleration;
+      if (steering > steeringMax){
+        steering = steeringMax;
+      }
+    }
+    if(right){
+      steering += steeringAcceleration;
+      if (steering < -steeringMax){
+        steering = -steeringMax;
+      }
+    }
 
+    speed *= groundFriction;
+
+    // prevent drift
+    if(speed > 0 && speed < 0.05){
+      speed = 0;
+    }
+
+    velocityX = Math.sin (player.angle * Math.PI / 180) * speed;
+    velocityY = Math.cos (player.angle * Math.PI / 180) * -speed;
+
+    player.x += velocityX;
+    player.y += velocityY;
+
+    // prevent steering drift (right)
+    if(steering > 0){
+      // check if steering value is really low, set to 0
+      if(steering < 0.05)
+      {
+        steering = 0;
+      }
+    }
+    // prevent steering drift (left)
+    else if(steering < 0){
+      // check if steering value is really low, set to 0
+      if(steering > -0.05){
+        steering = 0;
+      }
+    }
+
+    // apply steering friction
+    steering = steering * steeringFriction;
+
+    // make car go straight after driver stops turning
+    steering -= (steering * 0.1);
+
+    // rotate
+    player.angle += steering * speed;
+    /**/
+
+    /**/
+	if(jam.Input.justPressed("A") || jam.Input.justPressed("UP")){
+      up = true;
+    } else if(jam.Input.justPressed("S") || jam.Input.justPressed("DOWN")){
+      down = true;
+    } else if(jam.Input.justPressed("LEFT")){
+      left = true;
+    } else if(jam.Input.justPressed("RIGHT")){
+      right = true;
+    }
+
+	if(jam.Input.justReleased("A") || jam.Input.justReleased("UP")){
+      up = false;
+    } else if(jam.Input.justReleased("S") || jam.Input.justReleased("DOWN")){
+      down = false;
+    } else if(jam.Input.justReleased("LEFT")){
+      left = false;
+    } else if(jam.Input.justReleased("RIGHT")){
+      right = false;
+    }
+    /**/
+
+    /** /
 	player.velocity.x = 0;
 	player.acceleration.y = 0;
 	if(jam.Input.buttonDown("A") || jam.Input.buttonDown("UP")){
       player.acceleration.y -= 100;
     } else if(jam.Input.justPressed("S") || jam.Input.justPressed("DOWN")){
-      console.log('foo');
       if (player.velocity.y < 0){
         player.acceleration.y += 5000;
       }
@@ -140,7 +252,7 @@ var makePlayer = function(game){
     if (player.velocity.x > max_speed){
       player.velocity.x = max_speed;
     }
-
+    /**/
   });
   return player;
 }
