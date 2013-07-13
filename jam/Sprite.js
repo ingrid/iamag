@@ -45,7 +45,7 @@ jam.Sprite = function(x, y){
 			self.height = self.image.naturalHeight;
 			self.imageLoaded();			
 		}
-	}
+	};
 
 	// In case you need to do something when the image finishes loading.
 	self.imageLoaded = function(){};
@@ -57,7 +57,7 @@ jam.Sprite = function(x, y){
 			self._renderHelper(context, camera, self.image,
 							   self.width, self.height, 0, 0, self.width, self.height);
 		}
-	}
+	};
 	
 	self._renderHelper = function(context, camera, image, w, h, sx, sy, sw, sh){
 		// Avoid horrible automatic blending if we have non-integer values
