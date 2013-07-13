@@ -20,6 +20,8 @@ var initialize = function(){
   var road = drawRoad(game);
   var cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000);
+  var bus = makeBus(430, 4000);
+  game.add(bus);
   game.add(potHole);
 
   bg.color = "rgba(0,128,255,0.75)";
@@ -288,10 +290,10 @@ var makePlayer = function(game){
   return player;
 }
 
-var makeBus = function(game){
+var makeBus = function(x, y){
   var d_speed = 100;
   var max_speed = 400;
-  var bus = jam.AnimatedSprite(320, 4000);
+  var bus = jam.AnimatedSprite(x, y);
   bus.setImage("data/bus.png", 32, 64);
 
   bus.anim_idle = jam.Animation.Strip([0], 32, 64, 0);
@@ -316,5 +318,6 @@ window.onload = function(){
   jam.preload("data/player.png");
   jam.preload("data/car.png");
   jam.preload("data/pothole.png");
+  jam.preload("data/bus.png");
   jam.showPreloader(document.body, initialize);
 };
