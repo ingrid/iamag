@@ -110,7 +110,9 @@ var generate_path = function(len){
 };
 
 var makePlayer = function(game){
-  var player = jam.AnimatedSprite(320, 0);
+  var d_speed = 100;
+  var max_speed = 400;
+  var player = jam.AnimatedSprite(320, 1000);
   player.setImage("data/player.png", 32, 32);
 
   player.anim_idle = jam.Animation.Strip([0], 32, 32, 0);
@@ -124,34 +126,39 @@ var makePlayer = function(game){
   player.update = jam.extend(player.update, function(elapsed){
 
 	player.velocity.x = 0;
-	//player.acceleration.y = 0;
+	player.acceleration.y = 0;
 	if(jam.Input.buttonDown("LEFT")){
 	  player.velocity.x = -90;
 	  player.playAnimation(player.anim_run);
 	  player.facing = jam.Sprite.LEFT;
+      if (player.velocity.y > 0){
+        player.acceleration.y += 2;
+      }
 	}
 	else if(jam.Input.buttonDown("RIGHT")){
 	  player.velocity.x = 90;
 	  player.playAnimation(player.anim_run);
 	  player.facing = jam.Sprite.RIGHT;
+      if (player.velocity.y > 0){
+        player.acceleration.y += 2;
+      }
 	}
 	else{
 	  player.playAnimation(player.anim_idle);
 	}
 
 	if(jam.Input.buttonDown("A") || jam.Input.buttonDown("UP")){
-      player.velocity.y = -200;
-  //    player.acceleration.y -= 20;
+      player.acceleration.y -= 100;
     } else if(jam.Input.buttonDown("S") || jam.Input.buttonDown("DOWN")){
-//      player.acceleration.y += 20;
-      player.velocity.y = 200;
+      player.acceleration.y += 500;
     }
-
-	//player.velocity.y += 1 * elapsed;
 
     if (player.velocity.y > 0){
       // Consider implementing driving in reverse later.
-      //player.velocity.y = 0;
+      player.velocity.y = 0;
+    }
+    if (player.velocity.x > max_speed){
+      player.velocity.x = max_speed;
     }
 
   });
