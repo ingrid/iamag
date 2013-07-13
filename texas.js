@@ -18,6 +18,8 @@ var initialize = function(){
   drawBackground(game);
   var player = makePlayer(game);
   var road = drawRoad(game);
+  var potHole = makePotHole(260, 3000);
+  game.add(potHole);
   
   bg.color = "rgba(0,128,255,0.75)";
 
@@ -36,11 +38,11 @@ var drawRoad = function(game, path){
   var tmp_context = tmp_canvas.getContext("2d");
   tmp_context.beginPath();
   tmp_context.moveTo(300, 0);
-  tmp_context.lineWidth = 90;
+  tmp_context.lineWidth = 290;
   tmp_context.strokeStyle = 'grey';
   tmp_context.lineCap = 'Round';
   var delta = 0;
-  var step = 200;
+  var step = 500;
   var intensity = tmp_canvas.width / 2 / 2 / 2;
   var center_x = tmp_canvas.width / 2;
   var points = _.chain(_.range(20)).map(function(i) {
@@ -58,6 +60,7 @@ var drawRoad = function(game, path){
   delta = 0;
 
   var road = new jam.Sprite(0, 0);
+  road._layer = -10;
   road.image = tmp_canvas;
   road.width = tmp_canvas.width;
   road.height = tmp_canvas.height;
@@ -88,7 +91,7 @@ var drawBackground = function(game){
 var makePlayer = function(game){
   var d_speed = 100;
   var max_speed = 400;
-  var player = jam.AnimatedSprite(320, 1000);
+  var player = jam.AnimatedSprite(320, 4000);
     player.setImage("data/car.png", 32, 51);
   
 
@@ -129,12 +132,12 @@ var makePlayer = function(game){
 	if(jam.Input.buttonDown("A") || jam.Input.buttonDown("UP")){
       player.acceleration.y -= 100;
     } else if(jam.Input.buttonDown("S") || jam.Input.buttonDown("DOWN")){
-      player.acceleration.y += 500;
+      player.acceleration.y += 100;
     }
 
     if (player.velocity.y > 0){
       // Consider implementing driving in reverse later.
-      player.velocity.y = 0;
+      //player.velocity.y = 0;
     }
     if (player.velocity.x > max_speed){
       player.velocity.x = max_speed;
@@ -144,9 +147,16 @@ var makePlayer = function(game){
   return player;
 }
 
+var makePotHole = function(x, y) {
+    var pothole = jam.AnimatedSprite(x || 0, y || 0);
+    pothole.setImage("data/pothole.png", 32, 26);
+    return pothole;
+}
+
 
 window.onload = function(){
   jam.preload("data/player.png");
   jam.preload("data/car.png");
+  jam.preload("data/pothole.png");
   jam.showPreloader(document.body, initialize);
 };
