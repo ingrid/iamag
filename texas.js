@@ -4,6 +4,7 @@ jam.includeModule("Debug");
 
 var initialize = function(){
   var game = jam.Game(640, 480, document.body);
+  game.bgColor = 'tan';
 
   //jam.Debug.showBoundingBoxes = true;
 
@@ -15,7 +16,6 @@ var initialize = function(){
   erase = false;
   var ctx = bg.image.getContext("2d");
 
-  drawBackground(game);
   var player = makePlayer(game);
   var cop = makeCop(game);
   var road = drawRoad(game);
@@ -197,7 +197,7 @@ var makeCop =  function(game){
 var drawRoad = function(game){
   var tmp_canvas = document.createElement("canvas");
   tmp_canvas.width = 640;
-  tmp_canvas.height = 5000;
+  tmp_canvas.height = 10000;
   var tmp_context = tmp_canvas.getContext("2d");
   tmp_context.beginPath();
   tmp_context.moveTo(300, 0);
@@ -231,26 +231,6 @@ var drawRoad = function(game){
 
 };
 
-var drawBackground = function(game){
-  var tmp_canvas = document.createElement("canvas");
-  tmp_canvas.width = 640;
-  tmp_canvas.height = 5000;
-  var tmp_context = tmp_canvas.getContext("2d");
-  tmp_context.rect(0,0,tmp_canvas.width,tmp_canvas.height);
-  tmp_context.fillStyle="tan";
-  tmp_context.fill();
-
-  var bg = new jam.Sprite(0, 0);
-  bg._layer = -100;
-  bg.image = tmp_canvas;
-  bg.width = tmp_canvas.width;
-  bg.height = tmp_canvas.height;
-  game.add(bg);
-};
-
-// Generate coordinates for drawing the road.
-
-
 var makePlayer = function(game){
 
   /**/
@@ -278,7 +258,7 @@ var makePlayer = function(game){
   var d_speed = 100;
   var max_speed = 400;
   // G.
-  player = jam.AnimatedSprite(320, 4000);
+  player = jam.AnimatedSprite(320, 9000);
   player.setImage("data/car.png", 32, 51);
 
 
@@ -292,6 +272,10 @@ var makePlayer = function(game){
   player.setCollisionOffsets(6, 0, 20, 31);
   player.setLayer(1);
   player.damage = 0;
+
+  // TODO from Mr. President Tibbers.
+  // Give Open Web Diplomat Mozilla Dino some hugs.
+  // Give Parisian Diplomat Tibbers some American honey.
 
   player.update = jam.extend(player.update, function(elapsed){
     /**/
