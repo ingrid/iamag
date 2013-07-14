@@ -25,6 +25,11 @@ var initialize = function(){
   game.add(bus);
   game.add(potHole);
 
+  _.each(_.range(30), function(i) {
+    var potHole = makePotHole(randomRange(260, 360), i * randomRange(100, 300), player);
+    game.add(potHole);
+  });
+
   bg.color = "rgba(0,128,255,0.75)";
 
   game.add(player);
@@ -35,6 +40,10 @@ var initialize = function(){
   //game.camera.bounce.y = 20;
   game.run();
 }
+
+var randomRange = function(min, max) {
+  return Math.random() * (max - min) + min;
+};
 
 var makeCam = function(g, p){
   var c = new jam.Sprite(p.x, p.y);
@@ -47,7 +56,9 @@ var makeCam = function(g, p){
 };
 
 var cops = [];
-
+var playCopCrash = _.debounce(function() {
+  jam.Sound.play('data/car_crash_03.ogg');
+}, 5000, true);
 var makeCop =  function(game){
   var c = jam.Sprite(320, 4050);
   c.setImage("data/police_car.png", 32, 51);
@@ -82,6 +93,7 @@ var makeCop =  function(game){
     /**/
 
     if(c.overlaps(player)){
+      playCopCrash();
       coll_cou += 0.1;
     } else if (coll_cou > 0){
       coll_cou = 0;
@@ -437,12 +449,13 @@ var makeBus = function(x, y, player){
   bus.anim_run = bus.anim_idle;
   bus.playAnimation(bus.anim_idle);
 
-  bus.setCollisionOffsets(6, 0, 20, 31);
+  //bus.setCollisionOffsets(5, 5, 5, 5);
   bus.setLayer(1);
   bus.speed = 7;
   var coll_cou = 0;
   bus.update = jam.extend(bus.update, function(elapsed){
     if(bus.overlaps(player)){
+      jam.Sound.play('data/car_crash_02.ogg');
       coll_cou += 0.1;
     } else if (coll_cou > 0){
       coll_cou = 0;
@@ -450,8 +463,8 @@ var makeBus = function(x, y, player){
     bus.collide(player);
 
     var vec = {};
-    vec.x = bus.x - player.x - 30;
-    vec.y = bus.y - player.y - 30;
+    vec.x = bus.x - player.x -35;
+    vec.y = bus.y - player.y;
     var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);    
     if(dist != 0){
       vec.x /= dist;
@@ -461,7 +474,7 @@ var makeBus = function(x, y, player){
       vec.y = -1;
     }
     bus.forward = vec;
-    if((Math.abs(bus.x - player.x) > 20 ) || (Math.abs(bus.y - player.y) > 20)){
+    if((Math.abs(bus.x - player.x -35) > 20 ) || (Math.abs(bus.y - player.y) > 20)){
       bus.angle = -(Math.atan2(vec.x, vec.y) * (180/Math.PI));
       var cou_fac = (1/(Math.floor(coll_cou) + 1));
       if (cou_fac < 0.1){
@@ -470,8 +483,8 @@ var makeBus = function(x, y, player){
       }
       var velocityX = Math.sin (bus.angle * Math.PI / 180) * bus.speed * cou_fac;
       var velocityY = Math.cos (bus.angle * Math.PI / 180) * -bus.speed * cou_fac;
-      bus.x += velocityX;
-      bus.y += velocityY;
+      bus.x += Math.floor(velocityX);
+      bus.y += Math.floor(velocityY);
       if (player.y - bus.y < -400) {
         bus.x = player.x + 200;
         bus.y = player.y - 500;
@@ -490,6 +503,7 @@ var makePotHole = function(x, y, player) {
       console.log('asdf');
       pothole.has_collided = true;
       player.setImage('data/damaged_car.png');
+      jam.Sound.play('data/car_crash_01.ogg');
       player.damage++;
       // play damage sound
 
@@ -505,5 +519,8 @@ window.onload = function(){
   jam.preload("data/pothole.png");
   jam.preload("data/bus.png");
   jam.preload("data/damaged_car.png");
+  jam.preload("data/car_crash_01.ogg");
+  jam.preload("data/car_crash_02.ogg");
+  jam.preload("data/car_crash_03.ogg");
   jam.showPreloader(document.body, initialize);
 };
