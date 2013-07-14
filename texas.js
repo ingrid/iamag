@@ -76,10 +76,20 @@ var makeCop =  function(game){
   var left = false;
   var right = false;
   /**/
-
+  var coll_cou = 0;
 
   var dumb = function(elapsed){
     /**/
+
+    if(c.overlaps(player)){
+      coll_cou += 0.1;
+    } else if (coll_cou > 0){
+      coll_cou = 0;
+    }
+    c.collide(player);
+    //c.acceleration.x = -c.velocity.x * 5000;
+    //c.acceleration.y = -c.velocity.y * 50000;
+
 	var vec = {};
 	vec.x = c.x - player.x;
 	vec.y = c.y - player.y;
@@ -94,11 +104,16 @@ var makeCop =  function(game){
     c.forward = vec;
 	if((Math.abs(c.x - player.x) > 20 ) || (Math.abs(c.y - player.y) > 20)){
 	  c.angle = -(Math.atan2(vec.x, vec.y) * (180/Math.PI));
-      var velocityX = Math.sin (c.angle * Math.PI / 180) * c.speed;
-      var velocityY = Math.cos (c.angle * Math.PI / 180) * -c.speed;
+      var cou_fac = (1/(Math.floor(coll_cou) + 1));
+      if (cou_fac < 0.1){
+        // It would be cool if velocity prior to the collision factored into this, but first we need cop acceleration.
+        cou_fac = 0;
+      }
+      var velocityX = Math.sin (c.angle * Math.PI / 180) * c.speed * cou_fac;
+      var velocityY = Math.cos (c.angle * Math.PI / 180) * -c.speed * cou_fac;
       c.x += velocityX;
       c.y += velocityY;
-      //console.log(c.angle);
+
 	  //c.velocity.x = -vec.x * c.speed;
       //c.velocity.y = -vec.y * c.speed;
     }
