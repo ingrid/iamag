@@ -20,7 +20,7 @@ var initialize = function(){
   var cop = makeCop(game);
   var road = drawRoad(game);
   var cam = makeCam(game, player);
-  var potHole = makePotHole(260, 3000);
+  var potHole = makePotHole(260, 3000, player);
   var bus = makeBus(330, 3000, player);
   game.add(bus);
   game.add(potHole);
@@ -291,6 +291,7 @@ var makePlayer = function(game){
 
   player.setCollisionOffsets(6, 0, 20, 31);
   player.setLayer(1);
+  player.damage = 0;
 
   player.update = jam.extend(player.update, function(elapsed){
     /**/
@@ -497,9 +498,19 @@ var makeBus = function(x, y, player){
   return bus;
 };
 
-var makePotHole = function(x, y) {
+var makePotHole = function(x, y, player) {
   var pothole = jam.AnimatedSprite(x || 0, y || 0);
   pothole.setImage("data/pothole.png", 32, 26);
+  pothole.update = jam.extend(pothole.update, function(elapsed){
+    if(player.overlaps(pothole) && !pothole.has_collided){
+      console.log('asdf');
+      pothole.has_collided = true;
+      player.setImage('data/damaged_car.png');
+      player.damage++;
+      // play damage sound
+
+    }
+  });
   return pothole;
 };
 
