@@ -65,12 +65,12 @@ var initialize = function(){
 //  engine1.volume = 0;
 //  console.log(Object.keys(engine));
   window.chase1 = jam.Sound.play('data/audio/mx_chase_layer_1.ogg');
-  window.chase1.volume = .50;
+  window.chase1.volume = 0;
   window.chase1.loop = true;
   window.chase2 = jam.Sound.play('data/audio/mx_chase_layer_2.ogg');
   chase2.volume = 0;
   chase2.loop = true;
-  
+
 
   // Full fade every 1500
   var up = true;
@@ -391,7 +391,7 @@ var loose = function(g){
   window.setTimeout(function(){
     g.paused = true;
     engine1.muted = true;
-    jam.Sound.play("data/audio/mx_game_over.ogg");
+    jam.Sound.play("data/audio/mx_game_over.ogg")
     _.range(10).forEach(function(i) {
       _.delay(function(){
         chase1.volume = 0.5 - 0.05 * i;
@@ -782,8 +782,10 @@ var screen = function(){
   var title = new jam.Text(50, 50);
   title.font = "20pt monospace";
   title.color = 'black';
-  title.text = 'Escape from Texas'
+  title.text = 'Escape from Texas';
   game.add(title);
+
+  var title_m = jam.Sound.play("data/audio/mx_title_temp.ogg");
 
   document.addEventListener('keydown',function(e){
 	var code = ('which' in e) ? e.which : e.keyCode;
@@ -791,12 +793,63 @@ var screen = function(){
       if (started === false){
         started = true;
         title.visible = false;
+        fade_out(title_m, function(){
+          fade_in(window.chase1);
+        });
         initialize();
       }
     }
   });
   game.run();
 };
+
+  var fade = function(snd, cb, speed, g){
+    var q
+    if (g === 0.5){
+      q = function(){
+        return(snd.volume >= 0.5)
+      };
+    }
+    if (g === 1){
+      q = function(){
+        return(snd.volume >= 1)
+      };
+    }
+    if (g === 0){
+      q = function(){
+        return(snd.volume <= 0)
+      };
+    }
+    var t = function(){
+      console.log(q());
+      if (q()){
+
+        if (cb != undefined){
+          cb();
+        }
+        return;
+      } else {
+        if((snd.volume + speed) < 0) {
+          snd.volume = 0;
+        } else if ((snd.volume + speed) > 1){
+          snd.volume = 0.5;
+        }else{
+          snd.volume = snd.volume + speed;
+        }
+        window.setTimeout(t, 1000.0/50);
+      }
+    };
+    t();
+  };
+
+  var fade_in = function(url, cb){
+    fade(url, cb, 0.005, 0.5);
+  };
+
+  var fade_out = function(url, cb){
+    fade(url, cb, -0.005, 0);
+  };
+
 
 window.onload = function(){
   jam.preload("data/player.png");
@@ -817,6 +870,7 @@ window.onload = function(){
   jam.preload("data/audio/mx_chase_layer_1.ogg");
   jam.preload("data/audio/mx_chase_layer_2.ogg");
   jam.preload("data/audio/mx_game_over.ogg");
+//  jam.preload("data/audio/mx_title_temp.ogg");
   jam.preload("data/damaged_car.png");
   jam.preload("data/game_over.png");
 
