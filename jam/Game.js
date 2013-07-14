@@ -60,8 +60,10 @@ jam.Game = function(width, height, parentElement){
 	self._canvas.height = self.height
 
 	self._tick = function(){
+      if (self.paused === false){
 		self.update();
 		self.render();
+      }
 		window.setTimeout(self._tick, 1000.0/self.fps);
 	};
 

@@ -1,9 +1,13 @@
 jam.includeModule("RectCollision");
 jam.includeModule("Animation");
 jam.includeModule("Debug");
+var game;
+var cam;
+var ws;
 
 var initialize = function(){
-  var game = window.game = jam.Game(640, 480, document.body);
+  game = window.game = jam.Game(640, 480, document.body);
+  game.paused = false;
   game.bgColor = 'tan';
 
   //jam.Debug.showBoundingBoxes = true;
@@ -14,15 +18,19 @@ var initialize = function(){
   bg.image.width = 640;
   bg.image.height = 480;
   erase = false;
+  console.log('f00');
   var ctx = bg.image.getContext("2d");
-
+  ws = new jam.Text(50, 50);
+  ws.font = "20pt monospace";
+  ws.color = '#fff';
+  game.add(ws);
   var player = makePlayer(game);
   var cop = makeCop(game, 320, 4050);
   //var cop = makeCop(game, 340, 4050);
   //var cop = makeCop(game, 300, 4050);
   //var cop = makeCop(game, 320, 4080);
   var road = drawRoad(game);
-  var cam = makeCam(game, player);
+  cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000, player);
   var bus = makeBus(330, 3000, player);
   game.add(bus);
@@ -43,14 +51,16 @@ var initialize = function(){
   //game.camera.bounce.y = 20;
 
   /**/
-  var engine1 = jam.Sound.play("data/audio/car_engine_med.ogg");
+  //var engine1 = jam.Sound.play("data/audio/car_engine_med.ogg");
+  var engine1 = jam.Sound.play(car_engine_med_ogg);
+  //engine1 = {};
   engine1.loop = true;
-  engine1.currentTime = 0;
-  engine1.volume = 0;
+  //engine1.currentTime = 0;
+  //engine1.volume = 0;
   //console.log(engine1.duration);
   //2.944558
-  var engine2 = jam.Sound.play("data/audio/car_engine_med_2.ogg");
-//  engine2 = {};
+  //var engine2 = jam.Sound.play("data/audio/car_engine_med_2.ogg");
+  engine2 = {};
   engine2.loop = true;
   engine2.currentTime = 1.5;
   engine2.volume = 1;
@@ -102,6 +112,15 @@ var makeCam = function(g, p){
   c.update = jam.extend(c.update, function(elapsed){
     c.x = p.x;
     c.y = p.y;
+    if (c.y < 300){
+      c.y = 300;
+    }
+    if (c.x  < 200){
+      c.k = 200;
+    }
+    if (c.x  > 2000){
+      c.k = 200;
+    }
   });
   g.add(c);
   return c;
@@ -341,6 +360,19 @@ var drawRoad = function(game){
   game.add(road);
 
 };
+var win = function(g){
+  ws.font = "20pt monospace";
+  ws.text = "You win!";
+  ws.color = '#fff';
+  ws.visible = true;
+  ws.x = cam.x;
+  ws.y = cam.y;
+
+
+  window.setTimeout(function(){
+    g.paused = true;
+  }, 300);
+};
 
 var makePlayer = function(game){
 
@@ -392,6 +424,11 @@ var makePlayer = function(game){
 
   player.update = jam.extend(player.update, function(elapsed){
     /**/
+
+    if (player.y < 0){
+      //console.log("Win!");
+      win(game);
+    }
 
     if(up){
       if (speed < speedMax){
