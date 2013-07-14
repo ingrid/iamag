@@ -25,8 +25,10 @@ var initialize = function(){
   var cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000, player);
   var bus = makeBus(330, 3000, player);
+  var ui = makeDistanceUi(cam , player);
   game.add(bus);
   game.add(potHole);
+  game.add(ui);
 
   _.each(_.range(30), function(i) {
     var potHole = makePotHole(randomRange(260, 360), i * randomRange(100, 300), player);
@@ -667,12 +669,27 @@ var makePotHole = function(x, y, player) {
   return pothole;
 };
 
+
 var gameOver = function(game) {
   var gameOver = jsGame.Sprite(281, 200);
   gameOver.gameOveretImage("data/gameOver.png");
   gameOver.layer = 100;
   game.add(gameOver);
+};
 
+var makeDistanceUi = function(cam, player) {
+  var timerText = jam.Text(360,595);
+  timerText.layer = 6;
+  timerText.color = "rgb(255,255,255)";
+  timerText.text = "";
+  timerText.shadow = true;
+  timerText.font = "30pt arial bold";
+  timerText.update = jam.extend(timerText.update, function(elapsed){
+    timerText.x = cam.x + 200;
+    timerText.y = cam.y - 180;
+    timerText.text = Math.floor(9000 - player.y) + 'm';
+  });
+  return timerText;
 };
 
 
@@ -693,6 +710,8 @@ window.onload = function(){
   jam.preload("data/audio/car_engine_low.ogg");
   jam.preload("data/audio/mx_title_temp.ogg");
   jam.preload("data/damaged_car.png");
+  jam.preload("data/game_over.png");
+
   jam.preload("data/car_crash_01.ogg");
   jam.preload("data/car_crash_02.ogg");
   jam.preload("data/car_crash_03.ogg");
