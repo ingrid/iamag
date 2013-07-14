@@ -47,12 +47,13 @@ var initialize = function(){
   //game.camera.bounce.y = 20;
 
   /**/
+  // Global audio elements. #NOTIMELEFTATTHEJAM
   //var engine1 = jam.Sound.play("data/audio/car_engine_med.ogg");
-  var engine1 = jam.Sound.play(car_engine_med_ogg);
+  var engine1 = window.engine1 = jam.Sound.play(car_engine_med_ogg);
   //engine1 = {};
   engine1.loop = true;
   //engine1.currentTime = 0;
-  //engine1.volume = 0;
+  engine1.volume = 0.5;
   //console.log(engine1.duration);
   //2.944558
   //var engine2 = jam.Sound.play("data/audio/car_engine_med_2.ogg");
@@ -63,6 +64,13 @@ var initialize = function(){
   engine2.mute = true;
 //  engine1.volume = 0;
 //  console.log(Object.keys(engine));
+  window.chase1 = jam.Sound.play('data/audio/mx_chase_layer_1.ogg');
+  window.chase1.volume = .50;
+  window.chase1.loop = true;
+  window.chase2 = jam.Sound.play('data/audio/mx_chase_layer_2.ogg');
+  chase2.volume = 0;
+  chase2.loop = true;
+  
 
   // Full fade every 1500
   var up = true;
@@ -367,8 +375,39 @@ var win = function(g){
 
   window.setTimeout(function(){
     g.paused = true;
+    engine1.muted = true;
   }, 300);
 };
+
+var loose = function(g){
+  ws.font = "20pt monospace";
+  ws.text = "You loose :(";
+  ws.color = '#fff';
+  ws.visible = true;
+  ws.x = cam.x;
+  ws.y = cam.y;
+
+
+  window.setTimeout(function(){
+    g.paused = true;
+    engine1.muted = true;
+    jam.Sound.play("data/audio/mx_game_over.ogg");
+    _.range(10).forEach(function(i) {
+      _.delay(function(){
+        chase1.volume = 0.5 - 0.05 * i;
+        chase2.volume = 0.5 - 0.05 * i;
+      }, i * 50);
+
+      _.delay(function(){
+        chase1.volume = 0;
+        chase2.volume = 0;
+      }, 600);
+    });
+  }, 200);
+
+
+};
+
 
 var makePlayer = function(game){
 
@@ -694,7 +733,16 @@ var makePotHole = function(x, y, player) {
       jam.Sound.play('data/car_crash_01.ogg');
       player.damage++;
       // play damage sound
-
+      if (player.damage > 1 ) {
+        loose(game);
+      }
+      if (player.damage === 1) {
+        _.range(10).forEach(function(i) {
+          _.delay(function(){
+            chase2.volume = 0.05 * i;
+          }, i * 20);
+        });
+      }
     }
   });
   return pothole;
@@ -766,6 +814,9 @@ window.onload = function(){
   jam.preload("data/audio/car_crash_02.ogg");
   jam.preload("data/audio/car_engine_low.ogg");
   jam.preload("data/audio/mx_title_temp.ogg");
+  jam.preload("data/audio/mx_chase_layer_1.ogg");
+  jam.preload("data/audio/mx_chase_layer_2.ogg");
+  jam.preload("data/audio/mx_game_over.ogg");
   jam.preload("data/damaged_car.png");
   jam.preload("data/game_over.png");
 
