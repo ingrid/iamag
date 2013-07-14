@@ -3,7 +3,7 @@ jam.includeModule("Animation");
 jam.includeModule("Debug");
 
 var initialize = function(){
-  var game = jam.Game(640, 480, document.body);
+  var game = window.game = jam.Game(640, 480, document.body);
   game.bgColor = 'tan';
 
   //jam.Debug.showBoundingBoxes = true;
@@ -465,7 +465,7 @@ var makeBus = function(x, y, player){
     var vec = {};
     vec.x = bus.x - player.x -35;
     vec.y = bus.y - player.y;
-    var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);    
+    var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
     if(dist != 0){
       vec.x /= dist;
       vec.y /= dist;
@@ -500,7 +500,6 @@ var makePotHole = function(x, y, player) {
   pothole.setImage("data/pothole.png", 32, 26);
   pothole.update = jam.extend(pothole.update, function(elapsed){
     if(player.overlaps(pothole) && !pothole.has_collided){
-      console.log('asdf');
       pothole.has_collided = true;
       player.setImage('data/damaged_car.png');
       jam.Sound.play('data/car_crash_01.ogg');
@@ -510,6 +509,14 @@ var makePotHole = function(x, y, player) {
     }
   });
   return pothole;
+};
+
+var gameOver = function(game) {
+  var gameOver = jsGame.Sprite(281, 200);
+  gameOver.gameOveretImage("data/gameOver.png");
+  gameOver.layer = 100;
+  game.add(gameOver);
+  
 };
 
 
@@ -522,5 +529,8 @@ window.onload = function(){
   jam.preload("data/car_crash_01.ogg");
   jam.preload("data/car_crash_02.ogg");
   jam.preload("data/car_crash_03.ogg");
+  jam.preload(car_engine_low_ogg);
+  jam.preload(car_engine_med_ogg);
+  jam.preload(car_engine_high_ogg);
   jam.showPreloader(document.body, initialize);
 };
