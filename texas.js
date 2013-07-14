@@ -59,8 +59,10 @@ var makeCop =  function(game, x, y){
   cops.push(c);
   c.g = {};
   c.g.x = Math.floor(Math.random() * 300);
+  var lr = -1;
   if (Math.random() > 0.5){
     c.g.x *= -1;
+    lr = 1;
   }
   c.g.y = 0;
   var sd = Math.floor(Math.random() * 6);
@@ -129,6 +131,9 @@ var makeCop =  function(game, x, y){
     if (dist > 200){
       vec.x += c.g.x;
       vec.y += c.g.y;
+    } else {
+      vec.x += (lr * (200/dist));
+      vec.x += (lr * (200/dist));
     }
     if(dist != 0){
       vec.x /= dist;
