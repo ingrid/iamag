@@ -6,13 +6,7 @@ var cam;
 var ws;
 
 var initialize = function(){
-  game = window.game = jam.Game(640, 480, document.body);
-  game.paused = false;
-  game.bgColor = 'tan';
-
-  //jam.Debug.showBoundingBoxes = true;
-
-  var bg = jam.Sprite(0, 0);
+ var bg = jam.Sprite(0, 0);
   bg.width = 640; bg.height = 480;
   bg.image = document.createElement("canvas");
   bg.image.width = 640;
@@ -729,6 +723,32 @@ var makeDistanceUi = function(cam, player) {
   return timerText;
 };
 
+var screen = function(){
+  game = window.game = jam.Game(640, 480, document.body);
+  game.paused = false;
+  game.bgColor = 'tan';
+
+  //jam.Debug.showBoundingBoxes = true;
+  var started = false;
+
+  var title = new jam.Text(50, 50);
+  title.font = "20pt monospace";
+  title.color = 'black';
+  title.text = 'Escape from Texas'
+  game.add(title);
+
+  document.addEventListener('keydown',function(e){
+	var code = ('which' in e) ? e.which : e.keyCode;
+    if (code === 32){
+      if (started === false){
+        started = true;
+        title.visible = false;
+        initialize();
+      }
+    }
+  });
+  game.run();
+};
 
 window.onload = function(){
   jam.preload("data/player.png");
@@ -758,5 +778,6 @@ window.onload = function(){
   // jam.Sound.play(car_engine_low_ogg)
   // jam.Sound.play(car_engine_med_ogg)
   // jam.Sound.play(car_engine_high_ogg)
-  jam.showPreloader(document.body, initialize);
+  //jam.showPreloader(document.body, initialize);
+jam.showPreloader(document.body, screen);
 };
