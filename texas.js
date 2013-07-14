@@ -532,5 +532,8 @@ window.onload = function(){
   jam.preload(car_engine_low_ogg);
   jam.preload(car_engine_med_ogg);
   jam.preload(car_engine_high_ogg);
+  // jam.Sound.play(car_engine_low_ogg)
+  // jam.Sound.play(car_engine_med_ogg)
+  // jam.Sound.play(car_engine_high_ogg)
   jam.showPreloader(document.body, initialize);
 };
