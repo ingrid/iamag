@@ -54,7 +54,7 @@ var initialize = function(){
 
   /**/
   //var engine1 = jam.Sound.play("data/audio/car_engine_med.ogg");
-  var engine1 = jam.Sound.play(car_engine_med_ogg);
+  var engine1 = window.engine1 = jam.Sound.play(car_engine_med_ogg);
   //engine1 = {};
   engine1.loop = true;
   //engine1.currentTime = 0;
@@ -373,8 +373,25 @@ var win = function(g){
 
   window.setTimeout(function(){
     g.paused = true;
+    engine1.muted = true;
   }, 300);
 };
+
+var loose = function(g){
+  ws.font = "20pt monospace";
+  ws.text = "You loose :(";
+  ws.color = '#fff';
+  ws.visible = true;
+  ws.x = cam.x;
+  ws.y = cam.y;
+
+
+  window.setTimeout(function(){
+    g.paused = true;
+    engine1.muted = true;
+  }, 200);
+};
+
 
 var makePlayer = function(game){
 
@@ -700,7 +717,9 @@ var makePotHole = function(x, y, player) {
       jam.Sound.play('data/car_crash_01.ogg');
       player.damage++;
       // play damage sound
-
+      if (player.damage > 1 ) {
+        loose(game);
+      }
     }
   });
   return pothole;
