@@ -18,9 +18,9 @@ var initialize = function(){
   drawBackground(game);
   var player = makePlayer(game);
   var cop = makeCop(game, 320, 4050);
-  var cop = makeCop(game, 340, 4050);
-  var cop = makeCop(game, 300, 4050);
-  var cop = makeCop(game, 320, 4080);
+  //var cop = makeCop(game, 340, 4050);
+  //var cop = makeCop(game, 300, 4050);
+  //var cop = makeCop(game, 320, 4080);
   var road = drawRoad(game);
   var cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000);
@@ -36,6 +36,55 @@ var initialize = function(){
   game.camera.follow = cam;
   //game.camera.bounce.x = 20;
   //game.camera.bounce.y = 20;
+
+  /**/
+  var engine1 = jam.Sound.play("data/audio/car_engine_med.ogg");
+  engine1.loop = true;
+  engine1.currentTime = 0;
+  engine1.volume = 0;
+  //console.log(engine1.duration);
+  //2.944558
+  var engine2 = jam.Sound.play("data/audio/car_engine_med_2.ogg");
+//  engine2 = {};
+  engine2.loop = true;
+  engine2.currentTime = 1.5;
+  engine2.volume = 1;
+  engine2.mute = true;
+//  engine1.volume = 0;
+//  console.log(Object.keys(engine));
+
+  // Full fade every 1500
+  var up = true;
+  var fac = 0.04;
+  var engine = function(){
+    /** /
+    if (up){
+      if ((engine1.volume + fac >= 1) ||
+         (engine2.volume - fac <= 0)){
+        engine1.volume = 1;
+        engine2.volume = 0;
+        up = false;
+      } else {
+        engine1.volume += fac;
+        engine2.volume -= fac;
+      }
+    } else {
+      if ((engine2.volume + fac >= 1) ||
+         (engine1.volume - fac <= 0)){
+        engine2.volume = 1;
+        engine1.volume = 0;
+        up = true;
+      } else {
+        engine2.volume += fac;
+        engine1.volume -= fac;
+      }
+    }
+    /**/
+    window.setTimeout(engine, 30);
+  };
+  //window.setTimeout(engine(), 0);
+  //engine();
+  /**/
   game.run();
 }
 
@@ -117,7 +166,7 @@ var makeCop =  function(game, x, y){
 
     if (c.respawn){
       c.y = player.y - 500;
-      c.respawn = true;
+      c.respawn = false;
     }
 
 	var vec = {};
@@ -132,8 +181,10 @@ var makeCop =  function(game, x, y){
       vec.x += c.g.x;
       vec.y += c.g.y;
     } else {
-      vec.x += (lr * (200/dist));
-      vec.x += (lr * (200/dist));
+      var sm = (lr * (200/dist)) - 1;
+      //console.log(sm);
+      vec.x += (lr * (200/dist)) - 1;
+      //vec.y += (lr * (200/dist)) - 1;
     }
     if(dist != 0){
       vec.x /= dist;
@@ -287,8 +338,11 @@ var drawBackground = function(game){
   bg.image = tmp_canvas;
   bg.width = tmp_canvas.width;
   bg.height = tmp_canvas.height;
+
   game.add(bg);
 };
+
+
 
 // Generate coordinates for drawing the road.
 
@@ -338,9 +392,6 @@ var makePlayer = function(game){
 
   player.update = jam.extend(player.update, function(elapsed){
     /**/
-
-    console.log(player.crash_cou);
-
 
     if(up){
       if (speed < speedMax){
@@ -518,5 +569,16 @@ window.onload = function(){
   jam.preload("data/car.png");
   jam.preload("data/pothole.png");
   jam.preload("data/bus.png");
+  jam.preload("data/police_car.png");
+  jam.preload("data/audio/Ocean_Ambience.ogg");
+  jam.preload("data/audio/car_crash_03.ogg");
+  jam.preload("data/audio/car_engine_med.ogg");
+  jam.preload("data/audio/car_engine_med_2.ogg");
+  jam.preload("data/audio/car_crash_01.ogg");
+  jam.preload("data/audio/car_engine_high.ogg");
+  jam.preload("data/audio/car_tires.ogg");
+  jam.preload("data/audio/car_crash_02.ogg");
+  jam.preload("data/audio/car_engine_low.ogg");
+  jam.preload("data/audio/mx_title_temp.ogg");
   jam.showPreloader(document.body, initialize);
 };
