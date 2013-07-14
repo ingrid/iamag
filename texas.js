@@ -467,7 +467,7 @@ var makeBus = function(x, y, player){
     var vec = {};
     vec.x = bus.x - player.x - 30;
     vec.y = bus.y - player.y - 30;
-    var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+    var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);    
     if(dist != 0){
       vec.x /= dist;
       vec.y /= dist;
@@ -487,6 +487,11 @@ var makeBus = function(x, y, player){
       var velocityY = Math.cos (bus.angle * Math.PI / 180) * -bus.speed * cou_fac;
       bus.x += velocityX;
       bus.y += velocityY;
+      if (player.y - bus.y < -400) {
+        bus.x = player.x + 200;
+        bus.y = player.y - 500;
+      }
+
     }
   });
   return bus;
