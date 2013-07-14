@@ -17,7 +17,10 @@ var initialize = function(){
 
   drawBackground(game);
   var player = makePlayer(game);
-  var cop = makeCop(game);
+  var cop = makeCop(game, 320, 4050);
+  var cop = makeCop(game, 340, 4050);
+  var cop = makeCop(game, 300, 4050);
+  var cop = makeCop(game, 320, 4080);
   var road = drawRoad(game);
   var cam = makeCam(game, player);
   var potHole = makePotHole(260, 3000);
@@ -48,12 +51,20 @@ var makeCam = function(g, p){
 
 var cops = [];
 
-var makeCop =  function(game){
-  var c = jam.Sprite(320, 4050);
+var makeCop =  function(game, x, y){
+  var c = jam.Sprite(x, y);
+  c.respawn = false;
   c.setImage("data/police_car.png", 32, 51);
   game.add(c);
   cops.push(c);
-  c.speed = 5;
+  c.g = {};
+  c.g.x = Math.floor(Math.random() * 300);
+  if (Math.random() > 0.5){
+    c.g.x *= -1;
+  }
+  c.g.y = 0;
+  var sd = Math.floor(Math.random() * 6);
+  c.speed = 2 + sd;
 
   /** /
   var speed = 0;
@@ -83,17 +94,42 @@ var makeCop =  function(game){
 
     if(c.overlaps(player)){
       coll_cou += 0.1;
+      player.crash_cou++;
     } else if (coll_cou > 0){
       coll_cou = 0;
     }
+
+    // This shit is broken.
     c.collide(player);
+
+    cops.forEach(function(cop){
+      if (cop === c){
+        return;
+      } else {
+        c.collide(cop);
+      }
+    });
+
     //c.acceleration.x = -c.velocity.x * 5000;
     //c.acceleration.y = -c.velocity.y * 50000;
+
+    if (c.respawn){
+      c.y = player.y - 500;
+      c.respawn = true;
+    }
 
 	var vec = {};
 	vec.x = c.x - player.x;
 	vec.y = c.y - player.y;
 	var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+    if (dist > 800){
+      // Respawn ahead;
+      c.respawn = true;
+    }
+    if (dist > 200){
+      vec.x += c.g.x;
+      vec.y += c.g.y;
+    }
     if(dist != 0){
       vec.x /= dist;
       vec.y /= dist;
@@ -233,14 +269,15 @@ var drawRoad = function(game){
 
 var drawBackground = function(game){
   var tmp_canvas = document.createElement("canvas");
-  tmp_canvas.width = 640;
+  //tmp_canvas.width = 640;
+  tmp_canvas.width = 2000;
   tmp_canvas.height = 5000;
   var tmp_context = tmp_canvas.getContext("2d");
   tmp_context.rect(0,0,tmp_canvas.width,tmp_canvas.height);
   tmp_context.fillStyle="tan";
   tmp_context.fill();
 
-  var bg = new jam.Sprite(0, 0);
+  var bg = new jam.Sprite(-1000, 0);
   bg._layer = -100;
   bg.image = tmp_canvas;
   bg.width = tmp_canvas.width;
@@ -292,8 +329,14 @@ var makePlayer = function(game){
   player.setCollisionOffsets(6, 0, 20, 31);
   player.setLayer(1);
 
+  player.crash_cou = 0;
+
   player.update = jam.extend(player.update, function(elapsed){
     /**/
+
+    console.log(player.crash_cou);
+
+
     if(up){
       if (speed < speedMax){
         speed += speedAcceleration;
@@ -436,6 +479,7 @@ var makePlayer = function(game){
       player.velocity.x = max_speed;
     }
     /**/
+    player.crash_cou = 0;
   });
   return player;
 };
